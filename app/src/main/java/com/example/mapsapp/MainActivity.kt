@@ -11,6 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.mapsapp.ui.navigation.ModalNavigation
+import com.example.mapsapp.ui.navigation.MyDrawerMenu
+import com.example.mapsapp.ui.screens.MapsScreen
 import com.example.mapsapp.ui.screens.PermissionsScreen
 import com.example.mapsapp.ui.theme.MapsAppTheme
 
@@ -20,11 +23,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MapsAppTheme {
-                    PermissionsScreen()
-                }
+                ModalNavigation()
             }
         }
     }
+}
 
 
 @Composable

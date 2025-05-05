@@ -31,11 +31,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mapsapp.utils.PermissionStatus
 import com.example.mapsapp.viewmodels.PermissionViewModel
 
-
 @Composable
-fun PermissionsScreen(){
+fun PermissionsScreen(navigateToNext: () -> Unit) {
     val activity = LocalContext.current
-    val viewModel = PermissionViewModel()
+    val viewModel = viewModel<PermissionViewModel>()
 
     val permissions = listOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -110,5 +109,8 @@ fun PermissionsScreen(){
                 Text("Go to settings")
             }
         }
+        if (permissions.all{
+            permissionsStatus[it] == PermissionStatus.Granted
+            }) navigateToNext()
     }
 }
