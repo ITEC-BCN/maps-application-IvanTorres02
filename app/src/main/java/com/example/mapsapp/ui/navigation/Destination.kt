@@ -13,6 +13,9 @@ sealed class Destination {
     object Map : Destination()
 
     @Serializable
+    data class CreateMarker(val latitud: Double, val longitud: Double) : Destination()
+
+    @Serializable
     object List : Destination()
 
 }
