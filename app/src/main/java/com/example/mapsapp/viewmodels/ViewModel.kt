@@ -33,7 +33,7 @@ class MarkerViewModel : ViewModel() {
         _markerDescription.value=value
     }
 
-    fun insertNewMarker(id: String, name: String, description: String, lat: Double, lon: Double, image: String) {
+    fun insertNewMarker(id: String, name: String, description: String, lat: String, lon: String, image: String) {
         val newMarker = Marker(
             id = id,
             nombre = name,
@@ -70,7 +70,7 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun updateMarker(id: String, name: String, description: String, lat: Double, lon: Double, image: String) {
+    fun updateMarker(id: String, name: String, description: String, lat: String, lon: String, image: String) {
         val updatedMarker = Marker(id, name, description, lat, lon, image)
         CoroutineScope(Dispatchers.IO).launch {
             database.updateMarker(id, updatedMarker)
