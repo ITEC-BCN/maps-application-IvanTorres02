@@ -28,7 +28,7 @@ fun MapsScreen(modifier: Modifier = Modifier, navController: NavController) {
         onMapClick = { Log.d("MAP CLICKED", it.toString()) },
         onMapLongClick = {
             navController.navigate(
-                Destination.CreateMarker(latitud = it.latitude, longitud = it.longitude)
+                Destination.CreateMarker(latitud = it.latitude.toString(), longitud = it.longitude.toString())
             )
         }
     ) {
