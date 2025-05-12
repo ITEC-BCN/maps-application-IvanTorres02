@@ -11,17 +11,14 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.serialization)
-
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
     namespace = "com.example.mapsapp"
     compileSdk = 35
-    buildFeatures {
-        buildConfig = true
-    }
+
     defaultConfig {
         applicationId = "com.example.mapsapp"
         minSdk = 24
@@ -30,17 +27,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField(
-            type = "String",
-            name = "SUPABASE_URL",
-            value = "\"${localProps.getProperty("supabaseUrl") ?: ""}\""
-        )
-        buildConfigField(
-            type = "String",
-            name = "SUPABASE_KEY",
-            value = "\"${localProps.getProperty("supabaseKey") ?: ""}\""
-        )
 
+        buildConfigField(
+            "String", "SUPABASE_URL",
+            "\"${localProps.getProperty("supabaseUrl") ?: ""}\""
+        )
+        buildConfigField(
+            "String", "SUPABASE_KEY",
+            "\"${localProps.getProperty("supabaseKey") ?: ""}\""
+        )
     }
 
     buildTypes {
@@ -52,13 +47,16 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
@@ -66,7 +64,7 @@ android {
 }
 
 dependencies {
-
+    // Compose + UI
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -75,6 +73,25 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // Maps
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+
+    // Supabase (usando BOM correctamente)
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
+    implementation("io.github.jan-tennert.supabase:storage-kt")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+    // Otros
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.client.android)
+    implementation(libs.coil.compose)
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -82,21 +99,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.maps.compose)
-    implementation(libs.play.services.maps)
-    implementation(libs.play.services.location)
-    implementation(libs.bom)
-    implementation(libs.postgrest.kt)
-    implementation(libs.ktor.client.android)
-    implementation("io.github.jan-tennert.supabase:storage-kt:$3.1.4")
-    implementation(libs.coil.compose)
-
-
-
-
 }
+
 secrets {
     propertiesFileName = "secrets.properties"
     defaultPropertiesFileName = "local.properties"

@@ -18,21 +18,21 @@ class MySupabaseClient() {
     constructor(supabaseUrl: String, supabaseKey: String) : this()
 
     suspend fun getAllMarkers(): List<Marker> {
-        return client.from("Marker").select().decodeList<Marker>()
+        return client.from("Markers").select().decodeList<Marker>()
     }
 
-    suspend fun getMarker(id: String): Marker {
-        return client.from("Marker").select {
+    suspend fun getMarker(id: Long): Marker {
+        return client.from("Markers").select {
             filter { eq("id", id) }
         }.decodeSingle<Marker>()
     }
 
     suspend fun insertMarker(marker: Marker) {
-        client.from("Marker").insert(marker)
+        client.from("Markers").insert(marker)
     }
 
-    suspend fun updateMarker(id: String, updated: Marker) {
-        client.from("Marker").update({
+    suspend fun updateMarker(id: Long, updated: Marker) {
+        client.from("Markers").update({
             set("nombre", updated.nombre)
             set("descripcion", updated.descripcion)
             set("latitud", updated.latitud)
@@ -43,8 +43,8 @@ class MySupabaseClient() {
         }
     }
 
-    suspend fun deleteMarker(id: String) {
-        client.from("Marker").delete {
+    suspend fun deleteMarker(id: Long) {
+        client.from("Markers").delete {
             filter { eq("id", id) }
         }
     }

@@ -33,7 +33,7 @@ class MarkerViewModel : ViewModel() {
         _markerDescription.value=value
     }
 
-    fun insertNewMarker(id: String, name: String, description: String, lat: Double, lon: Double, image: String) {
+    fun insertNewMarker(id: Long, name: String, description: String, lat: Double, lon: Double, image: String) {
         val newMarker = Marker(
             id = id,
             nombre = name,
@@ -57,7 +57,7 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun getMarker(id: String) {
+    fun getMarker(id: Long) {
         if (_selectedMarker == null) {
             CoroutineScope(Dispatchers.IO).launch {
                 val marker = database.getMarker(id)
@@ -70,7 +70,7 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun updateMarker(id: String, name: String, description: String, lat: Double, lon: Double, image: String) {
+    fun updateMarker(id: Long, name: String, description: String, lat: Double, lon: Double, image: String) {
         val updatedMarker = Marker(id, name, description, lat, lon, image)
         CoroutineScope(Dispatchers.IO).launch {
             database.updateMarker(id, updatedMarker)
@@ -78,7 +78,7 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun deleteMarker(id: String) {
+    fun deleteMarker(id: Long) {
         CoroutineScope(Dispatchers.IO).launch {
             database.deleteMarker(id)
             getAllMarkers()

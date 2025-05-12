@@ -43,6 +43,9 @@ postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
+storage-kt = { module = "io.github.jan-tennert.supabase:storage-kt" }
+supabase-ktor-client-android = { module = "io.github.jan-tennert.supabase:ktor-client-android" }
+supabase-postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 
 
 [plugins]

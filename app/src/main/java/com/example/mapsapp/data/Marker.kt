@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Marker(
-    val id: String,
+    val id: Long = 0,
     val nombre: String,
     val descripcion: String,
     val latitud: Double,
