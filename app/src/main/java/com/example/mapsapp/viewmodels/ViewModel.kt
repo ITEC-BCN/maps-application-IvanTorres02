@@ -1,5 +1,8 @@
 package com.example.mapsapp.viewmodels
 
+import android.graphics.Bitmap
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.MyApp
@@ -8,6 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
+import android.util.Base64
 
 class MarkerViewModel : ViewModel() {
 
@@ -24,27 +29,44 @@ class MarkerViewModel : ViewModel() {
 
     private var _selectedMarker: Marker? = null
 
-    fun editNombre(value : String){
-        _markerName.value=value
+    fun editNombre(value: String) {
+        _markerName.value = value
     }
 
-
-    fun editDescripcion(value : String){
-        _markerDescription.value=value
+    fun editDescripcion(value: String) {
+        _markerDescription.value = value
     }
 
-    fun insertNewMarker(id: Long, name: String, description: String, lat: Double, lon: Double, image: String) {
-        val newMarker = Marker(
-            id = id,
-            nombre = name,
-            descripcion = description,
-            latitud = lat,
-            longitud = lon,
-            imagen = image
-        )
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun insertNewMarker(
+        id: Long,
+        name: String,
+        description: String,
+        lat: Double,
+        lon: Double,
+        image: Bitmap?
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
-            database.insertMarker(newMarker)
-            getAllMarkers()
+            val imageUrl = image?.let {
+                val stream = ByteArrayOutputStream()
+                it.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                val byteArray = stream.toByteArray()
+                val base64Image = encodeImageToBase64(byteArray)
+                database.uploadImage(base64Image)
+                base64Image
+            } ?: ""
+
+            val newMarker = Marker(
+                id = id,
+                nombre = name,
+                descripcion = description,
+                latitud = lat,
+                longitud = lon,
+                imagen = imageUrl
+            )
+
+            database.insertMarker(newMarker) // Insertar el marcador en la base de datos
+            getAllMarkers() // Recargar los marcadores
         }
     }
 
@@ -83,5 +105,10 @@ class MarkerViewModel : ViewModel() {
             database.deleteMarker(id)
             getAllMarkers()
         }
+    }
+
+    // Función para convertir una imagen en Base64
+    private fun encodeImageToBase64(byteArray: ByteArray): String {
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 }

@@ -14,7 +14,6 @@ import com.example.mapsapp.viewmodels.MarkerViewModel
 
 @Composable
 fun MainNavigationWrapper(navToNext: NavHostController, modifier: Modifier) {
-    // ViewModel compartido
     val markerViewModel: MarkerViewModel = viewModel()
 
     NavHost(navToNext, Destination.Map) {

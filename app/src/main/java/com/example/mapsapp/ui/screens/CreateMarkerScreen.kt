@@ -3,8 +3,10 @@ package com.example.mapsapp.ui.screens
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +25,7 @@ import androidx.core.content.FileProvider
 import com.example.mapsapp.viewmodels.MarkerViewModel
 import java.io.File
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CreateMarkerScreen(
     latitud: Double,
@@ -146,9 +149,13 @@ fun CreateMarkerScreen(
 
         Button(
             onClick = {
-                val imageString = bitmap.value?.let { encodeBitmapToBase64(it) } ?: ""
+                val imageUrl = bitmap.value?.let {
+                    val byteArray = encodeBitmapToByteArray(it)
+                    viewModel.insertNewMarker(byteArray)
+                } ?: ""
+
                 val id = System.currentTimeMillis()
-                viewModel.insertNewMarker(id, title, description, latitud, longitud, imageString)
+                viewModel.insertNewMarker(id, title, description, latitud, longitud, imageUrl)
                 navigateBack()
             },
             colors = ButtonDefaults.buttonColors(
@@ -185,8 +192,8 @@ fun createImageUri(context: android.content.Context): Uri? {
     )
 }
 
-fun encodeBitmapToBase64(bitmap: Bitmap): String {
+fun encodeBitmapToByteArray(bitmap: Bitmap): ByteArray {
     val outputStream = java.io.ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-    return android.util.Base64.encodeToString(outputStream.toByteArray(), android.util.Base64.DEFAULT)
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    return outputStream.toByteArray()
 }
