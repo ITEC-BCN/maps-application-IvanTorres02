@@ -149,13 +149,8 @@ fun CreateMarkerScreen(
 
         Button(
             onClick = {
-                val imageUrl = bitmap.value?.let {
-                    val byteArray = encodeBitmapToByteArray(it)
-                    viewModel.insertNewMarker(byteArray)
-                } ?: ""
-
                 val id = System.currentTimeMillis()
-                viewModel.insertNewMarker(id, title, description, latitud, longitud, imageUrl)
+                viewModel.insertNewMarker(id, title, description, latitud, longitud, bitmap.value)
                 navigateBack()
             },
             colors = ButtonDefaults.buttonColors(
@@ -179,7 +174,6 @@ fun CreateMarkerScreen(
         }
     }
 }
-
 fun createImageUri(context: android.content.Context): Uri? {
     val file = File.createTempFile("temp_image_", ".jpg", context.cacheDir).apply {
         createNewFile()
@@ -190,10 +184,4 @@ fun createImageUri(context: android.content.Context): Uri? {
         "${context.packageName}.fileprovider",
         file
     )
-}
-
-fun encodeBitmapToByteArray(bitmap: Bitmap): ByteArray {
-    val outputStream = java.io.ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-    return outputStream.toByteArray()
 }

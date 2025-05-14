@@ -12,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import android.util.Base64
 
 class MarkerViewModel : ViewModel() {
 
@@ -51,9 +50,7 @@ class MarkerViewModel : ViewModel() {
                 val stream = ByteArrayOutputStream()
                 it.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 val byteArray = stream.toByteArray()
-                val base64Image = encodeImageToBase64(byteArray)
-                database.uploadImage(base64Image)
-                base64Image
+                database.uploadImage(byteArray)
             } ?: ""
 
             val newMarker = Marker(
@@ -65,14 +62,14 @@ class MarkerViewModel : ViewModel() {
                 imagen = imageUrl
             )
 
-            database.insertMarker(newMarker) // Insertar el marcador en la base de datos
-            getAllMarkers() // Recargar los marcadores
+            database.insertMarker(newMarker)
+            getAllMarkers()
         }
     }
 
     fun getAllMarkers() {
         CoroutineScope(Dispatchers.IO).launch {
-            val markers = database.getAllMarkers()
+            val markers = database.getAllMarcardor()
             withContext(Dispatchers.Main) {
                 _markersList.value = markers
             }
@@ -82,7 +79,7 @@ class MarkerViewModel : ViewModel() {
     fun getMarker(id: Long) {
         if (_selectedMarker == null) {
             CoroutineScope(Dispatchers.IO).launch {
-                val marker = database.getMarker(id)
+                val marker = database.getMarcardor(id.toInt())
                 withContext(Dispatchers.Main) {
                     _selectedMarker = marker
                     _markerName.value = marker.nombre
@@ -92,8 +89,8 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun updateMarker(id: Long, name: String, description: String, lat: Double, lon: Double, image: String) {
-        val updatedMarker = Marker(id, name, description, lat, lon, image)
+    fun updateMarker(id: Long, name: String, description: String, lat: Double, lon: Double, imageUrl: String) {
+        val updatedMarker = Marker(id, name, description, lat, lon, imageUrl)
         CoroutineScope(Dispatchers.IO).launch {
             database.updateMarker(id, updatedMarker)
             getAllMarkers()
@@ -102,13 +99,8 @@ class MarkerViewModel : ViewModel() {
 
     fun deleteMarker(id: Long) {
         CoroutineScope(Dispatchers.IO).launch {
-            database.deleteMarker(id)
+            database.deleteMarcardor(id.toInt())
             getAllMarkers()
         }
-    }
-
-    // Función para convertir una imagen en Base64
-    private fun encodeImageToBase64(byteArray: ByteArray): String {
-        return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 }

@@ -12,8 +12,6 @@ class MyApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
-        // No hace falta pasarle nada al constructor
         database = MySupabaseClient()
     }
 }

@@ -19,6 +19,11 @@ android {
     namespace = "com.example.mapsapp"
     compileSdk = 35
 
+    buildFeatures {
+        buildConfig = true
+    }
+
+
     defaultConfig {
         applicationId = "com.example.mapsapp"
         minSdk = 24
@@ -29,13 +34,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField(
-            "String", "SUPABASE_URL",
-            "\"${localProps.getProperty("supabaseUrl") ?: ""}\""
+            type = "String",
+            name = "SUPABASE_URL",
+            value = "\"${localProps.getProperty("supabaseUrl") ?: ""}\""
         )
         buildConfigField(
-            "String", "SUPABASE_KEY",
-            "\"${localProps.getProperty("supabaseKey") ?: ""}\""
+            type = "String",
+            name = "SUPABASE_KEY",
+            value = "\"${localProps.getProperty("supabaseKey") ?: ""}\""
         )
+
     }
 
     buildTypes {
@@ -85,6 +93,7 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:storage-kt")
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.github.jan-tennert.supabase:realtime-kt")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.0")
 
     // Otros
     implementation(libs.navigation.compose)
