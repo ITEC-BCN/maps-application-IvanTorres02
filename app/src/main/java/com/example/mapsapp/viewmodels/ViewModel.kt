@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.mapsapp.MyApp
 import com.example.mapsapp.data.Marker
 import kotlinx.coroutines.CoroutineScope
@@ -98,9 +99,10 @@ class MarkerViewModel : ViewModel() {
     }
 
     fun deleteMarker(id: Long) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch(Dispatchers.IO) {
             database.deleteMarcardor(id.toInt())
             getAllMarkers()
         }
     }
+
 }
