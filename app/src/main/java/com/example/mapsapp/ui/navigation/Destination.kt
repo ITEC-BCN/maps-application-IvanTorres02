@@ -18,4 +18,9 @@ sealed class Destination {
     @Serializable
     object List : Destination()
 
+    @Serializable
+    data class Detail(val markerId: Long) : Destination()
+
+    @Serializable
+    data class UpdateMarker(val markerId: Long,val nombre : String, val descripcion: String, val latitud: Double, val longitud: Double, val imagen : String) : Destination()
 }

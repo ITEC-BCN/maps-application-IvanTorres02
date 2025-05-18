@@ -3,7 +3,7 @@ package com.example.mapsapp
 import android.app.Application
 import com.example.mapsapp.data.MySupabaseClient
 
-class MyApp : Application() {
+class SupabaseApplication : Application() {
 
     companion object {
         lateinit var database: MySupabaseClient

@@ -4,18 +4,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.*
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -23,57 +23,65 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.example.mapsapp.viewmodels.MarkerViewModel
 import com.example.mapsapp.data.Marker
+import androidx.compose.ui.graphics.Color
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarkerListScreen(
     viewModel: MarkerViewModel,
     onMarkerClick: (Long) -> Unit = {}
 ) {
-    val markersList by viewModel.markersList.observeAsState(initial = emptyList())
-
+    // Crida a carregar els marcadors quan la pantalla es mostra inicialment
     LaunchedEffect(Unit) {
         viewModel.getAllMarkers()
     }
 
+    val markersList by viewModel.markersList.observeAsState(initial = emptyList())
+
     Scaffold(
     ) { padding ->
+
+        // Llista vertical en que es mostren tots els marcadors de la base de dades
         LazyColumn(
-            contentPadding = padding,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            items(items = markersList, key = { it.id }) { marker ->
-                val dismissState = rememberSwipeToDismissBoxState()
+            // Iterem amb índex per poder usar una clau única (id)
+            itemsIndexed(markersList, key = { _, marker -> marker.id }) { _, marker ->
 
-                if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart &&
-                    dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
-                ) {
-                    LaunchedEffect(marker) {
-                        viewModel.deleteMarker(marker.id)
+                // Estat per controlar el swipe (lliscament per eliminar)
+                val dissmissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = {
+                        if (it == SwipeToDismissBoxValue.EndToStart) {
+                            viewModel.deleteMarker(marker)
+                            true
+                        } else {
+                            false
+                        }
                     }
-                }
+                )
 
+                // Composable per permetre l'eliminació amb lliscament
                 SwipeToDismissBox(
-                    state = dismissState,
+                    state = dissmissState,
+
                     backgroundContent = {
                         Box(
-                            modifier = Modifier
+                            Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 16.dp),
-                            contentAlignment = Alignment.CenterEnd
+                                .padding(horizontal = 20.dp),
+                            contentAlignment = Alignment.BottomEnd
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Eliminar",
-                                tint = Color.White
+                                contentDescription = "Delete",
+                                tint = Color.White,
+                                modifier = Modifier.padding(bottom = 15.dp)
                             )
                         }
                     }
                 ) {
-                    MarkerItem(marker = marker) {
+                    // Contingut principal de la pantalla, marcadors que permeten click i ens porta a la pantalla de detall
+                    MarkerItem(marker) {
                         onMarkerClick(marker.id)
                     }
                 }
@@ -81,16 +89,18 @@ fun MarkerListScreen(
         }
     }
 }
-
 @Composable
 fun MarkerItem(marker: Marker, onClick: () -> Unit) {
+    // Tarja clicable per mostrar la informació del marcador
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onClick() }, // Quan es toca, executem el callback
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
+        // Disseny en fila dels marcadors
         Row(modifier = Modifier.padding(16.dp)) {
+
             if (marker.imagen.isNotEmpty()) {
                 Image(
                     painter = rememberAsyncImagePainter(
@@ -99,14 +109,15 @@ fun MarkerItem(marker: Marker, onClick: () -> Unit) {
                             .crossfade(true)
                             .build()
                     ),
-                    contentDescription = "Imatge del marcador",
+                    contentDescription = "Imagen del marcador",
                     modifier = Modifier
-                        .size(64.dp)
-                        .padding(end = 16.dp),
-                    contentScale = ContentScale.Crop
+                        .size(64.dp) // Mida fixa
+                        .padding(end = 16.dp), // Espai a la dreta
+                    contentScale = ContentScale.Crop // Imatge tallada correctament
                 )
             }
 
+            // Columna amb el nom i descripció del marcador
             Column {
                 Text(text = marker.nombre, style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(4.dp))

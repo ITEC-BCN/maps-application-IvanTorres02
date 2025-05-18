@@ -40,6 +40,7 @@ fun CreateMarkerScreen(
     var description by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) }
 
+    // Llençador per fer una foto amb la càmera
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success && imageUri.value != null) {
             context.contentResolver.openInputStream(imageUri.value!!)?.use { stream ->
@@ -48,6 +49,7 @@ fun CreateMarkerScreen(
         }
     }
 
+    // Llençador per seleccionar una imatge de la galeria
     val pickImageLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             imageUri.value = it
@@ -57,19 +59,20 @@ fun CreateMarkerScreen(
         }
     }
 
+    // Pregunta per confirmar si es vol obrir la camara
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
             title = { Text("Abrir Cámara") },
-            text = { Text("¿Quieres abrir la cámara para tomar una foto?") },
+            text = { Text("¿Quieres abrir la cámara para hacer una foto?") },
             confirmButton = {
                 TextButton(onClick = {
                     showDialog = false
                     val uri = createImageUri(context)
                     imageUri.value = uri
-                    launcher.launch(uri!!)
+                    launcher.launch(uri!!) // S'inicia la càmera amb el URI temporal
                 }) {
-                    Text("Tomar Foto")
+                    Text("Hacer Foto")
                 }
             },
             dismissButton = {
@@ -86,6 +89,7 @@ fun CreateMarkerScreen(
             .padding(top = 85.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Camp per introduir el títol
         Text("Título", fontSize = 24.sp)
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -97,6 +101,7 @@ fun CreateMarkerScreen(
 
         Spacer(modifier = Modifier.height(34.dp))
 
+        // Camp per introduir la descripció del marker
         Text("Descripción", fontSize = 24.sp)
         Spacer(modifier = Modifier.height(15.dp))
         TextField(
@@ -108,6 +113,7 @@ fun CreateMarkerScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Es mostra la imatge nomes si s'ha seleccionat una
         bitmap.value?.let {
             Image(
                 bitmap = it.asImageBitmap(),
@@ -121,11 +127,12 @@ fun CreateMarkerScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Botons per obrir càmera o seleccionar de galeria
         Row {
             TextButton(
                 onClick = { showDialog = true },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray,
+                    containerColor = Color.Blue,
                     contentColor = Color.White
                 )
             ) {
@@ -147,14 +154,15 @@ fun CreateMarkerScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Botó per guardar el marker amb la informació actual
         Button(
             onClick = {
-                val id = System.currentTimeMillis()
+                val id = System.currentTimeMillis() // ID temporal basat en el temps actual
                 viewModel.insertNewMarker(id, title, description, latitud, longitud, bitmap.value)
                 navigateBack()
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Green,
+                containerColor = Color.Blue,
                 contentColor = Color.White
             )
         ) {
@@ -163,10 +171,11 @@ fun CreateMarkerScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Botó per cancel·lar i tornar enrere
         Button(
             onClick = navigateBack,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Red,
+                containerColor = Color.Blue,
                 contentColor = Color.White
             )
         ) {
@@ -174,6 +183,8 @@ fun CreateMarkerScreen(
         }
     }
 }
+
+// Funció auxiliar per crear un URI temporal per a la foto
 fun createImageUri(context: android.content.Context): Uri? {
     val file = File.createTempFile("temp_image_", ".jpg", context.cacheDir).apply {
         createNewFile()

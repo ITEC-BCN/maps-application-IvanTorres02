@@ -6,7 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mapsapp.MyApp
+import com.example.mapsapp.SupabaseApplication
 import com.example.mapsapp.data.Marker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,26 +16,12 @@ import java.io.ByteArrayOutputStream
 
 class MarkerViewModel : ViewModel() {
 
-    private val database = MyApp.database
+    val database = SupabaseApplication.database
 
-    private val _markerName = MutableLiveData<String>()
-    val markerName = _markerName
-
-    private val _markerDescription = MutableLiveData<String>()
-    val markerDescription = _markerDescription
 
     private val _markersList = MutableLiveData<List<Marker>>()
     val markersList = _markersList
 
-    private var _selectedMarker: Marker? = null
-
-    fun editNombre(value: String) {
-        _markerName.value = value
-    }
-
-    fun editDescripcion(value: String) {
-        _markerDescription.value = value
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun insertNewMarker(
@@ -77,19 +63,6 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun getMarker(id: Long) {
-        if (_selectedMarker == null) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val marker = database.getMarcardor(id.toInt())
-                withContext(Dispatchers.Main) {
-                    _selectedMarker = marker
-                    _markerName.value = marker.nombre
-                    _markerDescription.value = marker.descripcion
-                }
-            }
-        }
-    }
-
     fun updateMarker(id: Long, name: String, description: String, lat: Double, lon: Double, imageUrl: String) {
         val updatedMarker = Marker(id, name, description, lat, lon, imageUrl)
         CoroutineScope(Dispatchers.IO).launch {
@@ -98,11 +71,15 @@ class MarkerViewModel : ViewModel() {
         }
     }
 
-    fun deleteMarker(id: Long) {
+    fun deleteMarker(marker: Marker) {
         viewModelScope.launch(Dispatchers.IO) {
-            database.deleteMarcardor(id.toInt())
+            database.deleteMarcardor(marker.id.toInt())
+            if (marker.imagen.isNotEmpty()) {
+                database.deleteImage(marker.imagen)
+            }
             getAllMarkers()
         }
     }
+
 
 }

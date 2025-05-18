@@ -1,9 +1,11 @@
 package com.example.mapsapp.data
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.mapsapp.BuildConfig
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.from
@@ -25,6 +27,7 @@ class MySupabaseClient {
         ) {
             install(Postgrest)
             install(Storage)
+           install (Auth){autoLoadFromStorage = true}
 
         }
         storage = client.storage
@@ -35,7 +38,7 @@ class MySupabaseClient {
         return client.from("Markers").select().decodeList<Marker>()
     }
 
-    suspend fun getMarcardor(id: Int): Marker{
+    suspend fun getMarcador(id: Int): Marker{
         return client.from("Markers").select {
             filter {
                 eq("id", id)
@@ -62,8 +65,9 @@ class MySupabaseClient {
     }
 
 
-    suspend fun deleteMarcardor(id: Int){
-        client.from("Markers").delete{
+    suspend fun deleteMarcardor(id: Int) {
+        Log.d("Supabase", "Eliminando marcador con ID: $id") // Debugging
+        client.from("Markers").delete {
             filter {
                 eq("id", id)
             }

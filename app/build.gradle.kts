@@ -94,6 +94,10 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:postgrest-kt")
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation ("androidx.compose.runtime:runtime-livedata:1.5.0")
+    implementation("io.github.jan-tennert.supabase:storage-kt:$3.1.4")
+    implementation("io.github.jan-tennert.supabase:auth-kt:3.1.4")
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
+    implementation("io.ktor:ktor-client-android:3.1.2")
 
     // Otros
     implementation(libs.navigation.compose)
@@ -101,6 +105,7 @@ dependencies {
     implementation(libs.ktor.client.android)
     implementation(libs.coil.compose)
     implementation(libs.androidx.material)
+
 
     // Tests
     testImplementation(libs.junit)
